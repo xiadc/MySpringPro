@@ -1,0 +1,28 @@
+/**
+ * @author :dell
+ * @date 2017年4月17日 上午8:50:24
+ * @CopyRight:中国地质大学(武汉) 信息工程学院
+ * Description:
+ */
+package com.lab.stcube.visualization;
+
+import com.lab.stcube.model.SpatioTemporalFeatureSet;
+
+/**
+ * @author dell
+ *
+ */
+public interface Ivisualization {
+	
+	/**
+	 * @author dell
+	 * 设置时空对象集合
+	 */
+	public void setSpatioTemporalFeatureSet(SpatioTemporalFeatureSet dataset);
+	
+	/**
+	 * @author dell
+	 * 获取数据可视化的部分
+	 */
+	public Object getAllData();
+}

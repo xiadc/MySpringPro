@@ -1,0 +1,50 @@
+package com.lab.stcube.dao;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public interface FeatureDao {
+
+    /**
+     * 
+     */
+    public void deleteSTFeature();
+
+    /**
+     * 
+     */
+    public void deleteSTFeatureSet();
+
+    /**
+     * @param property
+     */
+    public void querySTObjectByProperty(String property);
+
+    /**
+     * @param properties
+     */
+    public void querySTObjectByProperties(String properties);
+
+    /**
+     * 
+     */
+    public void getSTFeatureSet();
+
+    /**
+     * @param stFeature
+     */
+    public void setSTFeature(String stFeature);
+
+    /**
+     * 
+     */
+    public void setSTFeatureSet();
+
+    /**
+     * 
+     */
+    public void getSTFeature();
+
+}

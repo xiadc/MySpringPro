@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xdc.dao.UserMapper">
+<!-- 按照故障类型和维护区域查找工程师并按维修的故障数从高到低排名 -->
+	<select id="findUser" resultType="User">
+		select * from class;
+	</select>
+
+
+</mapper>

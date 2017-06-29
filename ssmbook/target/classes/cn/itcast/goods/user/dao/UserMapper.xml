@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.goods.user.dao.UserMapper">
+<!-- 注册用户-->
+	<insert id="add" parameterType="User">
+		insert into t_user values(#{uid},#{loginname},#{loginpass},#{email},#{status},#{activationcode})
+	</insert>
+<!-- 查询用户名是否已存在 -->
+	<select id="ajaxValidateLoginname" parameterType="java.lang.String" resultType="User">
+		select * from t_user where loginname = #{loginname}
+	</select>
+<!-- 查询邮箱是否已存在 -->
+	<select id="ajaxValidateEmail" parameterType="java.lang.String" resultType="User">
+		select * from t_user where email = #{email}
+	</select>
+<!-- 按用户名和密码查询 -->
+	<select id="findByLoginnameAndLoginpass"  resultType="User">
+		select * from t_user where loginname = #{loginname} and loginpass = #{loginpass}
+	</select>
+</mapper>
+

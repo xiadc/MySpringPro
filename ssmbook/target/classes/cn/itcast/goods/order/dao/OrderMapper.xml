@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.goods.order.dao.OrderMapper">
+
+	<insert id="addOrder" parameterType="Order">
+		insert into t_order values(#{oid},#{ordertime},#{total},#{status},#{address},#{user.uid})		
+	</insert>
+	
+	<insert id="addOrderItemList" parameterType="java.util.List">
+		<foreach collection="list" item="orderItem">
+			insert into t_orderitem values(#{orderItem.orderItemId},#{orderItem.quantity},#{orderItem.subtotal},#{orderItem.book.bid},#{orderItem.book.bname},#{orderItem.book.currPrice},#{orderItem.book.image_b},#{orderItem.order.oid});
+		</foreach>	
+	</insert>
+	
+	
+	<select id="findByOid" parameterType="java.lang.String" resultMap="OrderMap">
+		select * from t_order o,t_orderitem oi,t_user u,t_book b where oi.oid =o.oid and o.uid = u.uid and oi.bid = b.bid and o.oid= #{oid}
+	</select>
+		
+	
+	<select id="findByUser"  resultMap="OrderMap">
+		select * from t_order o,t_orderitem oi,t_user u,t_book b where oi.oid =o.oid and o.uid = u.uid and oi.bid = b.bid and o.uid= #{uid} order by o.ordertime desc limit #{start},#{ps}
+	</select>
+	
+	<resultMap type="Order" id="OrderMap">
+		<id property="oid" column="oid"></id>
+		<result property="ordertime" column="ordertime"/>
+		<result property="total" column="total"/>
+		<result property="status" column="status"/>
+		<result property="address" column="address"/>
+		<association property="user" javaType="User">
+			<id property="uid" column="uid"></id>
+			<result property="loginname" column="loginname"/>
+			<result property="loginpass" column="loginpass"/>
+		</association>
+		<collection property="orderItemList" ofType="OrderItem">
+			<id property="orderItemId" column="orderItemId"></id>
+			<result property="quantity" column="quantity"/>
+			<result property="subtotal" column="subtotal"/>
+			<association property="book" javaType="Book">
+				<id property="bid" column="bid"></id>
+				<result property="image_b" column="image_b"/>				
+				<result property="currPrice" column="currPrice"/>				
+			</association>			
+		</collection>		
+	</resultMap>
+	
+	<select id="findCountByUser" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from t_order where uid = #{uid}
+	</select>
+	
+	<select id="findStatus" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select status from t_order where oid = #{oid}
+	</select>
+	
+	<update id="updateStatus">
+		update t_order set status = #{status} where oid = #{oid}
+	</update>
+	
+</mapper>

@@ -1,0 +1,59 @@
+package com.lab.stcube.dao.imp;
+
+import java.util.*;
+
+import com.lab.stcube.dao.FeatureDao;
+import com.lab.stcube.model.SpatioTemporalFeature;
+import com.lab.stcube.model.SpatioTemporalFeatureSet;
+
+/**
+ * 
+ */
+public class MongoFeatureDaoImp implements FeatureDao {
+
+	@Override
+	public boolean deleteSTFeature(SpatioTemporalFeature stFeature) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean deleteSTFeatureSet(SpatioTemporalFeatureSet stFeatureSet) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public SpatioTemporalFeatureSet querySTObjectByProperty(String property) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SpatioTemporalFeatureSet querySTObjectByProperties(
+			String[] properties) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean addSTFeature(SpatioTemporalFeature stFeature) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addSTFeatureSet(SpatioTemporalFeatureSet stFeatureSet) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public SpatioTemporalFeatureSet queryAllSpatioTemporalFeature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+   
+
+}

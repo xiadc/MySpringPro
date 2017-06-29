@@ -1,0 +1,119 @@
+package com.lab.stcube.model;
+
+import java.util.*;
+
+import org.opengis.feature.simple.SimpleFeature;
+
+/**
+ * 
+ */
+public class SpatioTemporalFeature {
+
+    /**
+     * Default constructor
+     */
+    public SpatioTemporalFeature() {
+    }
+
+    /**
+     * 
+     */
+    private TimePeriod m_timePeriod;
+
+    /**
+     * 
+     */
+    private SimpleFeature m_feature;
+
+    /**
+     * 
+     */
+    private long m_stId;
+
+
+
+
+
+
+    /**
+     * @return
+     */
+    public TimePeriod getTimePeriod() {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    public SimpleFeature getFeature() {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    public String getStId() {
+        // TODO implement here
+        return "";
+    }
+
+    /**
+     * @param String 
+     * @return
+     */
+    public Object getAttribute(String s) {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @param String 
+     * @param Object 
+     * @return
+     */
+    public boolean setAttribute(String s, Object object) {
+        // TODO implement here
+        return false;
+    }
+
+    /**
+     * @return
+     */
+    public String getGeometryType() {
+        // TODO implement here
+        return "";
+    }
+
+    /**
+     * @param String
+     */
+    public void setGeometry(String s) {
+        // TODO implement here
+    }
+
+    /**
+     * @return
+     */
+    public Object getGeometry() {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    public String getCRS() {
+        // TODO implement here
+        return "";
+    }
+
+    /**
+     * @param String
+     */
+    public void setCRS(String s) {
+        // TODO implement here
+    }
+
+}

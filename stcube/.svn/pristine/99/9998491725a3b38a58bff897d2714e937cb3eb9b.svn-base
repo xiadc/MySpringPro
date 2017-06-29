@@ -1,0 +1,91 @@
+package com.lab.stcube.model;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * 
+ */
+public class TimePeriod {
+
+    /**
+     * Default constructor
+     */
+    public TimePeriod() {
+    }
+
+    public TimePeriod(String bg) {
+    	setBegin(bg);
+    }
+    
+    public TimePeriod(String bg,String format) {
+    	if(format==""){
+    		setBegin(bg);
+    	}
+    	else {
+			setBegin(bg, format);
+		}
+    }
+    
+    public TimePeriod(String bg,String ed,String format) {
+    	if(format==""){
+        	setBegin(bg);
+        	setEnd(ed);
+    	}else {
+        	setBegin(bg,format);
+        	setEnd(ed,format);
+		}
+
+    }
+    
+    
+    
+    /**
+     * 
+     */
+    private Long begin;
+
+    /**
+     * 
+     */
+    private Long end;
+    
+    
+    
+    public Long getBegin() {	
+    	return begin;
+	}
+    
+    public void setBegin(String s) {
+    	begin = getTimeStamp(s,"yyyy-MM-dd HH:mm:ss");
+	}
+    
+    public void setBegin(String s,String format) {
+    	begin = getTimeStamp(s,format);
+	}
+    
+    
+    public Long getEnd() {
+		return end;
+	}
+    
+    public void setEnd(String s) {
+    	end = getTimeStamp(s,"yyyy-MM-dd HH:mm:ss");
+	}
+    
+    public void setEnd(String s,String format) {
+    	begin = getTimeStamp(s,format);
+	}
+    
+    
+    private Long getTimeStamp(String str,String format) {
+    	//format=format?format:"yyyy-MM-dd HH:mm:ss";
+        try {  
+            SimpleDateFormat sdf = new SimpleDateFormat(format);  
+            return sdf.parse(str).getTime();  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+        }  
+        return (long) 0;  
+	}
+}

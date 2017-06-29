@@ -1,0 +1,144 @@
+package com.lab.stcube.model;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public class SpatioTemporalFeatureSet {
+
+    /**
+     * Default constructor
+     */
+    public SpatioTemporalFeatureSet() {
+    }
+
+    /**
+     * 
+     */
+    private List<SpatioTemporalFeature> m_stObjects;
+
+    /**
+     * 
+     */
+    public TimePeriod m_timePeriod;
+
+    /**
+     * 
+     */
+    private String m_CRS;
+
+    /**
+     * 
+     */
+    private String m_stId;
+
+    /**
+     * 
+     */
+    public MBR m_boundBox;
+
+
+
+
+    /**
+     * @return
+     */
+    public TimePeriod getTimePeriod() {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    public String getGeometryType() {
+        // TODO implement here
+        return "";
+    }
+
+    /**
+     * @param SpatioTemporalFeature 
+     * @return
+     */
+    public boolean addStObject(SpatioTemporalFeature stObject) {
+        // TODO implement here
+        return false;
+    }
+
+    /**
+     * @param String 
+     * @return
+     */
+    public SpatioTemporalFeature findStObject(String s) {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @param long num 
+     * @param long index   
+     * @return
+     */
+    public List<SpatioTemporalFeature> getStObeject(long num, long index  ) {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @param long index 
+     * @return
+     */
+    public SpatioTemporalFeature getStObjectByIndex(long index) {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @param long index 
+     * @return
+     */
+    public boolean removeStObject(long index) {
+        // TODO implement here
+        return false;
+    }
+
+    /**
+     * @param String
+     */
+    public void isAtrributeExist(String s) {
+        // TODO implement here
+    }
+
+    /**
+     * @param String
+     */
+    public void setCRS(String s) {
+        // TODO implement here
+    }
+
+    /**
+     * @return
+     */
+    public String getCRS() {
+        // TODO implement here
+        return "";
+    }
+
+    /**
+     * @return
+     */
+    public MBR getBoundBox() {
+        // TODO implement here
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    public long getStSetNum() {
+        // TODO implement here
+        return 0;
+    }
+
+}

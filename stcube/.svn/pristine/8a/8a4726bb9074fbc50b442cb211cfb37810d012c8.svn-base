@@ -1,0 +1,18 @@
+package com.lab.stcube.model;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public abstract class Geometry {
+
+    /**
+     * Default constructor
+     */
+    public Geometry() {
+    }
+
+
+
+}

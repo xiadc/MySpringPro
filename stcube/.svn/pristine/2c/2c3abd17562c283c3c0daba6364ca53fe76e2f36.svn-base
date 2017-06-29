@@ -1,0 +1,20 @@
+package com.lab.stcube.transform;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public interface IDataTransform {
+
+    /**
+     * 
+     */
+    public void loadDataSource();
+
+    /**
+     * 
+     */
+    public void transferDataSource();
+
+}

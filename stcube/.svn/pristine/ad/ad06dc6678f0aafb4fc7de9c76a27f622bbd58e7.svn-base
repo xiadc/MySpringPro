@@ -1,0 +1,26 @@
+package com.lab.stcube.precompute.imp;
+
+import java.util.*;
+
+import com.lab.stcube.precompute.IPreCompute;
+
+
+/**
+ * 
+ */
+public class VectorPreCompute implements IPreCompute {
+
+    /**
+     * Default constructor
+     */
+    public VectorPreCompute() {
+    }
+
+    /**
+     * 
+     */
+    public void preCompute() {
+        // TODO implement here
+    }
+
+}

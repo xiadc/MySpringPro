@@ -1,0 +1,31 @@
+package com.lab.stcube.model;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public class TimePeriod {
+
+    /**
+     * Default constructor
+     */
+    public TimePeriod() {
+    }
+
+    /**
+     * 
+     */
+  //  public timestamp begin;
+
+    /**
+     * 
+     */
+  //  public timestamp end;
+
+
+
+
+
+
+}

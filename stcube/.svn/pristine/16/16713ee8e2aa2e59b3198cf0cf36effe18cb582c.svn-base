@@ -1,0 +1,28 @@
+<html>
+<body>
+<h2>Hello World!</h2>
+<script type="text/javascript" src="./javascript/jquery-1.12.0.js"></script>
+<script type="text/javascript">
+
+function aaclick(){  
+	   var url = "http://localhost:8080/stcube/data/basedata.action";  
+	   var value ="t";  
+	   //alert(value)  
+	   $.ajax({  
+	       url:url,  
+	       type:"POST",  
+	       data:"loginId="+value,  
+	        success:function(data){  
+	           if(data!=null){  
+	               // do someString   
+	               alert(data)  
+	           }  
+	       }   
+	   });  
+	  }  
+
+aaclick();
+
+</script>
+</body>
+</html>

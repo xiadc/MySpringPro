@@ -1,0 +1,72 @@
+package com.lab.stcube.dao;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public class MongoFeatureDaoImp implements FeatureDao {
+
+    /**
+     * Default constructor
+     */
+    public MongoFeatureDaoImp() {
+    }
+
+    /**
+     * 
+     */
+    public void deleteSTFeature() {
+        // TODO implement here
+    }
+
+    /**
+     * 
+     */
+    public void deleteSTFeatureSet() {
+        // TODO implement here
+    }
+
+    /**
+     * @param property
+     */
+    public void querySTObjectByProperty(String property) {
+        // TODO implement here
+    }
+
+    /**
+     * @param properties
+     */
+    public void querySTObjectByProperties(String properties) {
+        // TODO implement here
+    }
+
+    /**
+     * 
+     */
+    public void getSTFeatureSet() {
+        // TODO implement here
+    }
+
+    /**
+     * @param stFeature
+     */
+    public void setSTFeature(String stFeature) {
+        // TODO implement here
+    }
+
+    /**
+     * 
+     */
+    public void setSTFeatureSet() {
+        // TODO implement here
+    }
+
+    /**
+     * 
+     */
+    public void getSTFeature() {
+        // TODO implement here
+    }
+
+}

@@ -1,0 +1,6 @@
+excelFilepath=D:\\database\\excel\\NIJ2016_SEP01_SEP30.xlsx
+attributes=CATEGORY,CALL GROUPS,final_case_type,CASE DESC,census_tract
+timePeriod=occ_date
+timeFormat=yyyy-mm-dd
+geometry=point:x_coordinate,y_coordinate
+CRS=epsg:3857

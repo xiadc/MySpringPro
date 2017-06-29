@@ -1,0 +1,47 @@
+package com.lab.stcube.transform;
+
+import java.util.*;
+
+import com.lab.stcube.dao.FeatureDao;
+import com.lab.stcube.model.SpatioTemporalFeature;
+
+
+/**
+ * 
+ */
+public class DataTransformImp implements IDataTransform {
+
+    /**
+     * Default constructor
+     */
+    public DataTransformImp() {
+    }
+
+    /**
+     * 
+     */
+    public FeatureDao featureDao;
+
+    /**
+     * 
+     */
+    public SpatioTemporalFeature stFeature;
+
+
+    /**
+     * 
+     */
+    public void loadDataSource() {
+        // TODO implement here
+    }
+
+    /**
+     * 
+     */
+    public void transferDataSource() {
+        // TODO implement here
+    }
+
+  
+
+}

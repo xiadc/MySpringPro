@@ -1,0 +1,182 @@
+package com.lab.stcube.transform.imp;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+import org.geotools.feature.SchemaException;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.operation.TransformException;
+
+import com.lab.stcube.dao.DataSourceDao;
+import com.lab.stcube.dao.FeatureDao;
+import com.lab.stcube.dao.imp.ExcelDaoImp;
+import com.lab.stcube.model.GeomTypeEnum;
+import com.lab.stcube.model.SpatioTemporalFeature;
+import com.lab.stcube.model.SpatioTemporalFeatureSet;
+import com.lab.stcube.transform.IDataTransform;
+import com.vividsolutions.jts.io.ParseException;
+
+
+/**
+ * 
+ */
+public class DataTransformImp implements IDataTransform {
+
+    /**
+     * Default constructor
+     */
+    public DataTransformImp() {
+    	st_objects= new SpatioTemporalFeatureSet();
+    }
+
+    /**
+     * 
+     */
+    public FeatureDao featureDao;
+    
+    public DataSourceDao dataSourceDao;
+
+    /**
+     * 
+     */
+    public SpatioTemporalFeatureSet st_objects;
+
+
+    /**
+     * 
+     */
+    public void transferDataToSTFeatureSet() {
+        // TODO implement here
+    	Properties prop = new Properties();
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream("dataSourcePath.properties");
+		try {
+			prop.load(in);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String filepath = prop.getProperty("excelFilepath");
+		String [] attributes = prop.getProperty("attributes").split(",");
+		String timePeriod = prop.getProperty("timePeriod");
+		String timeFormat = prop.getProperty("timeFormat");
+		String geometryType = prop.getProperty("geometry").split(":")[0];
+		String [] geometryAttributes = prop.getProperty("geometry").split(":")[1].split(",");
+		String CRS = prop.getProperty("CRS");
+		List<Map<String, String>> list = dataSourceDao.queryAllData(filepath);
+		
+		String typeSpec = "";
+		for (String a : attributes){
+			typeSpec += a.trim() + ":String,";
+		}
+		typeSpec = typeSpec.substring(0, typeSpec.length()-1);
+		GeomTypeEnum geomType = null;
+		switch(geometryType){
+		case "point":
+			geomType = GeomTypeEnum.Point;
+//		case "lingString":
+//			geomType = GeomTypeEnum.LingString;
+//		case "polygon":
+//			geomType = GeomTypeEnum.Polygon;
+//		case "lineaRing":
+//			geomType = GeomTypeEnum.LineaRing;
+		}
+		try {
+			st_objects.setFeatureType(typeSpec, geomType, CRS);
+		} catch (NoSuchAuthorityCodeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SchemaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (Map<String, String> map : list){
+			String wktStr ="POINT ("+map.get(geometryAttributes[0])+" "+map.get(geometryAttributes[1])+")";
+			SpatioTemporalFeature stFtest=new SpatioTemporalFeature();
+			stFtest.setFeatureType(st_objects.getFeatureType());
+			for (String attribute : attributes){
+				stFtest.setAttribute(attribute, map.get(attribute));
+			}
+			stFtest.setTimePeriod(map.get(timePeriod), timeFormat);	
+			try {
+				stFtest.setGeometry(wktStr);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				st_objects.addStObject(stFtest);
+			} catch (MismatchedDimensionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchAuthorityCodeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransformException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+				
+    }
+
+    /**
+     * 
+     */
+    public void persistSTFeatureSet() {
+        // TODO implement here
+    }
+    
+    public FeatureDao getFeatureDao(){
+    	return featureDao;
+    }
+    
+    public void setFeatureDao(FeatureDao featureDao){
+    	this.featureDao = featureDao;
+    }
+    
+    public DataSourceDao getDataSourceDao(){
+    	return dataSourceDao;
+    }
+    
+    public void setDataSourceDao(DataSourceDao dataSourceDao){
+    	this.dataSourceDao = dataSourceDao;
+    }
+    
+    public SpatioTemporalFeatureSet getSt_objects(){
+    	return this.st_objects;
+    }
+    
+    public void setSt_objects(SpatioTemporalFeatureSet st_objects){
+    	this.st_objects = st_objects;
+    }
+    
+    public static void main(String[] args) throws IOException {
+		DataTransformImp dImp = new DataTransformImp();
+		dImp.setDataSourceDao(new ExcelDaoImp());
+		dImp.transferDataToSTFeatureSet();
+		DataSourceDao dataSourceDao = dImp.getDataSourceDao();
+		Properties prop = new Properties();
+		InputStream in = dImp.getClass().getClassLoader().getResourceAsStream("dataSourcePath.properties");
+		prop.load(in);
+		String filepath = prop.getProperty("excelFilepath");
+		List<Map<String, String>> list = dataSourceDao.queryAllData(filepath);
+		for (Map<String, String> l : list){
+			Set<String> keys = l.keySet();
+			for (String key : keys){
+				System.out.print(l.get(key) + "...");
+			}
+			System.out.print("\r\n");
+		}
+
+	}
+    
+}

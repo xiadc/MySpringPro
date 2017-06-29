@@ -1,0 +1,40 @@
+package com.lab.stcube.algorithm.imp;
+
+import java.util.*;
+
+import com.lab.stcube.algorithm.IAlgorithm;
+import com.lab.stcube.model.SpatioTemporalFeatureSet;
+
+
+/**
+ * 
+ */
+public class MSOLAPAlgorithm implements IAlgorithm {
+
+    /**
+     * Default constructor
+     */
+    public MSOLAPAlgorithm() {
+    }
+
+    /**
+     * @param obj 
+     * @param param 
+     * @return
+     */ 
+   // public SpatioTemporalFeatureSet rollup(SpatioTemporalFeatureSet obj, Param param) {
+        // TODO implement here
+  //      return null;
+  //  }
+
+    /**
+     * @param obj 
+     * @param param 
+     * @return
+     */
+  //  public SpatioTemporalFeatureSet drilldown(SpatioTemporalFeatureSet obj, Param param) {
+        // TODO implement here
+ //       return null;
+  //  }
+
+}

@@ -1,0 +1,20 @@
+package com.lab.stcube.transform;
+
+import java.util.*;
+
+/**
+ * 
+ */
+public interface IDataTransform {
+
+    /**
+     * 
+     */
+    public void transferDataToSTFeatureSet();
+
+    /**
+     * 
+     */
+    public void persistSTFeatureSet();
+
+}

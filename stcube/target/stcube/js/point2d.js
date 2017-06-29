@@ -1,0 +1,209 @@
+/*    
+var features = new Array(count);
+      var e = 18000000;
+      for (var i = 0; i < count; ++i) {
+        features[i] = new ol.Feature({
+          'geometry': new ol.geom.Point(
+              [2 * e * Math.random() - e, 2 * e * Math.random() - e]),
+          'i': i,
+          'size': i % 2 ? 10 : 20
+        });
+      }
+
+      var styles = {
+        '10': new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({color: '#666666'}),
+            stroke: new ol.style.Stroke({color: '#bada55', width: 1})
+          })
+        }),
+        '20': new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 10,
+            fill: new ol.style.Fill({color: '#666666'}),
+            stroke: new ol.style.Stroke({color: '#bada55', width: 1})
+          })
+        })
+      };
+
+      var vectorSource = new ol.source.Vector({
+        features: features,
+        wrapX: false
+      });
+*/      
+
+
+ol.Map.prototype.getPntFeatures=function(dataSet) {
+    var pntfeatures = [];
+    for (var i = 0; i < dataSet.length; ++i) {
+        data_i = dataSet[i];
+        pntfeatures[i] = new ol.Feature({
+            'geometry': new ol.geom.Point(
+              [data_i.lng, data_i.lat])
+            , 'i': i
+            , 'size': 10
+        });
+    }
+    return pntfeatures;
+}
+
+ol.Map.prototype.addPntLayer=function(dataSet,name) {
+    var pntVector = this.getLayerByName("pntTest");
+    if(pntVector){
+        this.removeLayer(pntVector);
+        pntVector=null;
+    }
+    
+    
+    var pntStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 5
+            , fill: new ol.style.Fill({
+                color: '#666666'
+            })
+            , stroke: new ol.style.Stroke({
+                color: '#bada55'
+                , width: 1
+            })
+        })
+    });
+    var pntSource = new ol.source.Vector({
+        features: this.getPntFeatures(dataSet)
+        , //wrapX: false    
+    });
+    
+    pntVector = new ol.layer.Vector({
+        source: pntSource
+        , style: pntStyle
+    }); 
+    pntVector["name"]=name;
+    this.addLayer(pntVector);
+}
+
+//charts.clearChart();
+
+//根据索引值遍历更新点--更新日期
+var updateDatePnt = function (dataSet, bgTime, edTime) {
+    if (!(dataSet || bgTime || edTime)) return;
+   
+    var tempDataSet = [];
+    map.removeLayer(map.getLayerByName("pntTest"));
+    
+    //若只存在开始时间则只显示改时间点的数据
+    if (!edTime) {
+        for (index in dataSet)
+            if (dataSet[index]["time"] === bgTime) tempDataSet.push(dataSet[index]);
+    }
+    else {
+        for (index in dataSet)
+            if (bgTime <= dataSet[index]["time"] && edTime >= dataSet[index]["time"]) tempDataSet.push(dataSet[index]);
+    }
+    map.addLayer(addPntLayer(tempDataSet, "pntTest"));
+}
+
+
+//根据索引值遍历更新点--更新类型
+var updateTypePnt = function(dataSet,type)
+{
+    if(!(dataSet||type))return;
+    
+    var tempDataSet = [];
+    map.removeLayer(map.getLayerByName("pntTest"));
+    
+    for(index in dataSet)
+        if(dataSet[index]["type"]===type)
+            tempDataSet.push(dataSet[index]);
+    
+    map.addLayer(addPntLayer(tempDataSet, "pntTest"));
+}
+
+
+
+//updateTypePnt(pntPos_yl,0);
+//updateTypePnt(pntPos_yl,1);
+
+//updateDatePnt(pntPos_yl,20130101,20140101);
+
+var pntPos_yl=[];
+
+function getBaseData(){  
+       var url = "/stcube/data/basedata.action";  
+       var value ="t";  
+       //alert(value)  
+       $.ajax({  
+           url:url,  
+           type:"POST",  
+           data:"loginId="+value,  
+            success:function(data){  
+               if(data!=null){  
+                   // do someString   
+                   //alert(data[0]["time"]);
+                   pntPos_yl=data;
+                   timeData = data[data.length-1];
+                   charts.updateChart(pntPos_yl,timeData);//,crimeData);
+                   data.splice(data.length-1,1);
+                   
+                   map.addPntLayer(pntPos_yl,"pntTest");
+                   charts.updateChart(pntPos_yl,timeData);//,crimeData);
+                  // alert(data[0]["lng"]+" "+data[0]["lat"]);
+                  // map.getView().setCenter(data[0]["lng"],data[0]["lat"]);
+                   //map.setView(map.getView().setCenter([parseFloat(data[0]["lng"]),parseFloat(data[0]["lat"])]));
+                   map.getView().setCenter([data[0]["lng"],data[0]["lat"]]);
+                     
+                   
+               }  
+           }   
+       });  
+      }  
+
+function getTimeCount(){  
+    var url = "/stcube/data/timecount.action";  
+    var value ="t";  
+    //alert(value)  
+    $.ajax({  
+        url:url,  
+        type:"POST",  
+        data:"loginId="+value,  
+         success:function(data){  
+            if(data!=null){  
+            	timeData=data;
+                charts.updateChart(pntPos_yl,timeData);//,crimeData);
+            }  
+        }   
+    });  
+   } 
+
+getBaseData();
+//getTimeCount();
+
+
+//map.tranProj(pntPos_yl);
+//   pntFeature=getPntFeatures(pntPos_yl);
+
+
+
+
+
+charts=new ChartControl("div_map",map);
+charts.initCharts(true,false);
+
+crimeData={
+    title:["抢劫","盗窃","纠纷","斗殴","吸毒","嫖娼"],
+    data:[100,1000,200,310,220,182]
+}
+
+timeData={};
+
+
+timeData={
+    title:["2013/1","2013/2","2013/3","2013/4","2013/5","2013/6","2013/7","2013/8","2013/9","2013/10","2013/11","2013/12","2014/1","2014/2","2014/3","2014/4","2014/5","2014/6","2014/7","2014/8","2014/9","2014/10","2014/11","2014/12"],
+    data:[100,230,30,40,60,120,200,180,120,250,160,170,180,140,80,90,68,66,210,122,145,110,132,150]
+}
+
+
+
+
+
+
+

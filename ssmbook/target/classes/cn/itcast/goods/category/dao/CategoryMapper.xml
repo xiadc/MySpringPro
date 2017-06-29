@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.itcast.goods.category.dao.CategoryMapper">
+	<select id="findAll" resultMap="CategoryResultMap">
+		SELECT t1.*,t2.cid AS t2_cid,t2.`cname` AS t2_cname,t2.`pid` AS t2_pid,t2.`desc` AS t2_desc
+		FROM t_category AS t1 LEFT JOIN t_category AS t2
+		ON t1.cid = t2.pid
+		WHERE t1.pid IS NULL ORDER BY t1.orderBy
+	</select>
+	
+	<resultMap type="Category" id="CategoryResultMap">
+		
+		<id column="cid" property="cid"></id>
+		<result column="cname" property="cname"/>
+		<result column="desc" property="desc"/>		
+		<collection property="childList" ofType="Category">
+			<id column="t2_cid" property="cid"></id>
+			<result column="t2_cname" property="cname"/>
+			<result column="t2_desc" property="desc"/>
+			<association property="parent" javaType="Category">
+				<id column="cid" property="cid"></id>
+				<result column="cname" property="cname"/>
+				<result column="desc" property="desc"/>
+			</association>		
+		</collection>
+	</resultMap>
+</mapper>

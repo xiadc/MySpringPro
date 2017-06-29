@@ -1,0 +1,361 @@
+package com.lab.stcube.model;
+
+import java.util.*;
+
+import javax.xml.transform.Source;
+
+import org.aspectj.weaver.ast.Var;
+import org.geotools.data.DataUtilities;
+import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.feature.GeometryAttribute;
+import org.opengis.feature.simple.*;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
+
+import com.mchange.v1.util.ArrayUtils;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
+
+/**
+ * 
+ */
+public class SpatioTemporalFeature {
+
+  
+
+	/**
+     * Default constructor
+     */
+    public SpatioTemporalFeature() {
+    }
+    
+	/**
+     * Default constructor
+	 * @throws FactoryException 
+	 * @throws SchemaException 
+	 * @throws NoSuchAuthorityCodeException 
+     */
+    public SpatioTemporalFeature(String typeSpec,GeomTypeEnum geomType,String epsgCode) throws NoSuchAuthorityCodeException, SchemaException, FactoryException {
+    	setFeatureType(typeSpec,geomType,epsgCode);
+    }
+    
+    /**
+     * 
+     */
+    private TimePeriod m_timePeriod;
+
+    /**
+     * 
+     */
+    private SimpleFeature m_feature=null;
+
+    /**
+     * 
+     */
+    private long m_stId;
+    
+    private int m_srid=4326;
+    
+    /**
+     * @return
+     */
+    public void setFeatureType(SimpleFeatureType type) {
+    	if(m_feature != null)return;
+    	SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type);  
+    	//m_typeBuilder.setCharset(Charset.forName("GBK"));  
+    	m_feature=builder.buildFeature( "ttt" );
+    	m_srid=Integer.parseInt(CRS.toSRS(type.getCoordinateReferenceSystem(),true));
+        return;
+    } 
+    
+    /**
+     * @return
+     * @throws SchemaException 
+     * @throws FactoryException 
+     * @throws NoSuchAuthorityCodeException 
+     */
+    public void setFeatureType(String typeSpec,GeomTypeEnum geomType,String epsgCode) throws SchemaException, NoSuchAuthorityCodeException, FactoryException{
+    	if(m_feature != null)return;
+    	String sridStr=epsgCode.split(":")[1];
+    	SimpleFeatureType originalType = DataUtilities.createType("t1","the_geom:"+geomType.toString()+":srid="+sridStr+","+typeSpec);
+    	
+    	SimpleFeatureBuilder builder = new SimpleFeatureBuilder(originalType);  
+    	m_feature=builder.buildFeature("");
+    	m_srid=Integer.parseInt(sridStr);
+        return;
+    } 
+    
+    public void setFeatureType(String typeSpec,GeomTypeEnum geomType) throws SchemaException, NoSuchAuthorityCodeException, FactoryException{
+    	setFeatureType(typeSpec, geomType, "EPSG:"+m_srid);
+        return;
+    } 
+    
+    /**
+     * @return
+     * @throws FactoryException 
+     * @throws NoSuchAuthorityCodeException 
+     */
+    public SimpleFeatureType getFeatureType() throws NoSuchAuthorityCodeException, FactoryException {
+        return SimpleFeatureTypeBuilder.retype(m_feature.getFeatureType(), getCRS());
+    } 
+    
+    public String getFeatureTypeName() {
+    	return m_feature.getFeatureType().getTypeName();	
+	}
+    
+    public List<String> getFieldNames() {
+    	List<AttributeDescriptor> list = m_feature.getFeatureType().getAttributeDescriptors();
+    	List<String> names=new ArrayList<String>();
+    	int i=1;
+    	for (AttributeDescriptor attrides : list) {
+    		if (--i>=0) continue;
+    		names.add(attrides.getLocalName());
+		}
+    	return names;
+	}
+    
+    public boolean isFieldExist(String name) {
+    	List<AttributeDescriptor> list = m_feature.getFeatureType().getAttributeDescriptors();
+    	for (AttributeDescriptor attrides : list) {
+    		if(attrides.getLocalName().equals(name))return true;
+		}
+    	return false;
+	}
+    
+    /**
+     * @return
+     */
+    public TimePeriod getTimePeriod() {
+        return m_timePeriod;
+    }
+    
+    public void setTimePeriod(TimePeriod tp) {
+        m_timePeriod=tp;
+    	return;
+    }
+    
+    public void setTimePeriod(String bg) {
+        m_timePeriod=new TimePeriod(bg);
+    	return;
+    }
+    
+    public void setTimePeriod(String bg,String format) {
+        m_timePeriod=new TimePeriod(bg,format);
+    	return;
+    }
+    
+    public void setTimePeriod(long bg,long ed) {
+        m_timePeriod=new TimePeriod();
+        m_timePeriod.setBegin(bg);
+        m_timePeriod.setEnd(ed);
+    	return;
+    }
+    
+    public void setTimePeriod(String bg,String ed,String format) {
+        m_timePeriod=new TimePeriod(bg,ed,format);
+    	return;
+    }
+
+    /**
+     * @return
+     */
+    public SimpleFeature getFeature() {
+        return m_feature;
+    }
+
+    /**
+     * @return
+     */
+    public void setStId(long id) {
+    	m_stId=id;
+    }
+    
+    /**
+     * @return
+     */
+    public long getStId() {
+        return m_stId;
+    }
+
+    /**
+     * @param String 
+     * @return
+     */
+    public Object getAttribute(String name) {
+        return m_feature.getAttribute(name);
+    }
+
+    /**
+     * @param String 
+     * @param Object 
+     * @return
+     */
+    public void setAttribute(String key,Object value) {
+    	m_feature.setAttribute(key, value);
+        return;
+    }
+    
+    public void setAttributes(Object[] objs) {
+    	m_feature.setAttributes(Arrays.asList(objs));
+    	return;
+	}
+
+    /**
+     * @return
+     */
+    public GeomTypeEnum getGeometryType() {
+    	String[] strs = m_feature.getDefaultGeometry().getClass().toString().split("\\.");
+        return GeomTypeEnum.getEnumFromString(strs[strs.length-1]);
+    }
+    
+    /**
+     * @return
+     */
+    public String getGeometryTypeInWkt() {
+    	String[] strs = m_feature.getDefaultGeometry().getClass().toString().split("\\.");
+        return strs[strs.length-1].toUpperCase();
+    }
+
+    /**
+     * @param String   
+     * @throws ParseException 
+     */
+    public void setGeometry(String wktStr) throws ParseException {
+    	GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+  	    WKTReader reader = new WKTReader( geometryFactory );
+  	    m_feature.setDefaultGeometry(reader.read(wktStr));
+  	/*   
+  	  switch (geoType) {
+  	  case "Point":m_feature.setDefaultGeometry(reader.read(wktStr));break;
+      case "LingString":m_feature.setDefaultGeometry(reader.read(wktStr));break;
+  	  case "Polygon":m_feature.setDefaultGeometry(reader.read(wktStr));break;
+  	  case "LineaRing":m_feature.setDefaultGeometry(reader.read(wktStr));break;
+  	  default:break;
+  	  }
+  	 */ 
+    }
+    
+    public void setGeometry(Geometry geom){
+    	m_feature.setDefaultGeometry(geom);
+    }
+
+    /**
+     * @return
+     */
+    public Object getGeometry() {
+        return m_feature.getDefaultGeometry();
+    }
+    
+    public String getGeometryInWkt() {
+    	return this.getAttribute("the_geom").toString();
+	}
+
+    /**
+     * @return
+     * @throws FactoryException 
+     * @throws NoSuchAuthorityCodeException 
+     */
+    public CoordinateReferenceSystem getCRS() throws NoSuchAuthorityCodeException, FactoryException{
+      //  return m_feature.getFeatureType().getCoordinateReferenceSystem();// .toString();
+        //return m_feature.getDefaultGeometryProperty().getDescriptor().getCoordinateReferenceSystem();
+    	//return ((GeometryAttribute)m_feature.getProperty("the_geom")).getDescriptor().getCoordinateReferenceSystem();
+    	//return m_CRS;
+    	//--坐标参考系设置有误--
+    	//return CRS.decode("EPSG:"+((Geometry)m_feature.getDefaultGeometry()).getSRID()) ;
+    	return CRS.decode("EPSG:"+m_srid);
+    	//return null;
+    }
+    
+    //获取epsg编码
+    public String getEpsgCode() {
+		return "EPSG:"+m_srid;
+	}
+    /**
+     * @param String
+     * @throws FactoryException 
+     * @throws NoSuchAuthorityCodeException 
+     * @throws TransformException 
+     * @throws MismatchedDimensionException 
+     */
+    public void changeCRS(String epsg) throws NoSuchAuthorityCodeException, FactoryException, MismatchedDimensionException, TransformException {
+    	if(epsg.split(":")[1]==(m_srid+""))return;
+    	CoordinateReferenceSystem targetCRS = CRS.decode(epsg);
+    	//CoordinateReferenceSystem sourceCRS = getCRS();
+    	//坐标转化
+    	MathTransform tf = CRS.findMathTransform(getCRS(), targetCRS); //m_feature.getDefaultGeometry(); 	
+    	m_feature.setDefaultGeometry(JTS.transform((Geometry)m_feature.getDefaultGeometry(),tf));
+    	m_srid=Integer.parseInt(epsg.split(":")[1]);
+    }
+    
+    public void changeCRS(int srid) throws NoSuchAuthorityCodeException, FactoryException, MismatchedDimensionException, TransformException {
+    	if(srid==m_srid)return;
+    	CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:"+srid);
+    	//CoordinateReferenceSystem sourceCRS = getCRS();
+    	//坐标转化
+    	MathTransform tf = CRS.findMathTransform(getCRS(), targetCRS); //m_feature.getDefaultGeometry(); 	
+    	m_feature.setDefaultGeometry(JTS.transform((Geometry)m_feature.getDefaultGeometry(),tf));
+    	m_srid=srid;
+    }
+    
+    /*
+    public void setMBR(double minx,double miny,double maxx,double maxy) {
+		
+	}
+	*/
+    
+    public BoundingBox getMBR() {
+    	return  m_feature.getBounds();
+	}
+    
+    public static void main(String[] args) throws Exception {  	
+    	  System.out.println("test hello geotools");
+          
+    	  //示例1
+    	  SpatioTemporalFeature stFtest1=new SpatioTemporalFeature();
+    	  stFtest1.setFeatureType("field1:Integer,field2:String",GeomTypeEnum.Point,"epsg:4326");  //
+    	  
+          //stFtest1.setAttribute("field1", null);
+    	  stFtest1.setAttribute("field1", 121121);
+    	  stFtest1.setAttribute("field2", "第一种");
+    	 
+    	  stFtest1.setTimePeriod("2012/6/12", "yyyy/mm/dd");
+
+    	  stFtest1.setGeometry("POINT (113 23)");
+    	  
+     	  stFtest1.changeCRS("epsg:3857");  //重设参考坐标系
+    	  
+    	  System.out.println("1111test1 over---"+stFtest1.getCRS()+"---"+stFtest1.getGeometry()+"--"+stFtest1.getAttribute("the_geom")+"  "+stFtest1.getEpsgCode()+"\n\n\n");
+        //  m_builder = new SimpleFeatureBuilder(m_typeBuilder.buildFeatureType());  
+    	  //m_typeBuilder.setCharset(Charset.forName("GBK"));  
+    	  //m_feature=m_builder.buildFeature( "ttt" );
+    	 
+    	  SpatioTemporalFeature stFtest2=new SpatioTemporalFeature();
+    	  stFtest2.setFeatureType(stFtest1.getFeatureType());  //
+    	  
+          //stFtest1.setAttribute("field1", null);
+    	  stFtest2.setAttributes(new Object[]{null,23333,"第二种"});  	 
+    	  stFtest2.setTimePeriod("2012/6/12", "yyyy/mm/dd");
+    	  stFtest2.setGeometry("POINT (113 23)");
+    	 
+    	  stFtest2.getFieldNames();
+    	  System.out.println("2222test1 over---"+stFtest2.getCRS()+"---"+stFtest2.getGeometryType()+"--"+stFtest2.getAttribute("the_geom")+"\n-------++"+stFtest1.getEpsgCode());
+    	  System.out.println(GeomTypeEnum.getWktType(GeomTypeEnum.Point));
+    }
+    
+}

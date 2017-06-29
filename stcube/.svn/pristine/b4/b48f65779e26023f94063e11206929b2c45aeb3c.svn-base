@@ -1,0 +1,179 @@
+package com.lab.stcube.precompute.imp;
+
+import java.util.*;
+
+import org.bson.Document;
+
+import com.lab.stcube.dao.FeatureDao;
+import com.lab.stcube.dao.imp.MongoFeatureDaoImp;
+import com.lab.stcube.precompute.IPreCompute;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+
+
+/**
+ * 
+ */
+public class VectorPreCompute implements IPreCompute {
+
+	MongoFeatureDaoImp mongoDao;
+    /**
+     * Default constructor
+     */
+    public VectorPreCompute() {
+    	mongoDao = new MongoFeatureDaoImp();
+    }
+
+    /**
+     * 
+     */
+    public void preCompute() {
+        // TODO implement here
+    	
+    	MongoCollection<Document> preComputeCol = mongoDao.getCollection("crimePreCompute", "preComputeData2014");
+    	
+    	Document filter = new Document();
+    	//filter.append("beginDate.day", 1);
+    	FindIterable<Document> iter = mongoDao.findDocByFilter(filter)
+    											.projection(new Document("beginDate", 1)
+    													.append("_id", 1)
+    													.append("wktData", 1));
+    	//Set收集维度的具体值、去重，用null表示*（任意）
+    	Set<Integer> yearSet = new HashSet<>();
+    	yearSet.add(null);
+    	Set<Integer> monthSet = new HashSet<>();
+    	monthSet.add(null);
+    	Set<Integer> daySet = new HashSet<>();
+    	daySet.add(null);
+    	//装载所有数据记录
+    	List<Document> listDoc = new ArrayList<>();
+    	
+    	for (Document d : iter){
+    		Document date = (Document) d.get("beginDate");
+    		yearSet.add((Integer) date.get("year"));
+    		monthSet.add((Integer) date.get("month"));
+    		daySet.add((Integer) date.get("day"));
+    		
+    		Document doc = new Document();
+    		doc.append("year", (Integer) date.get("year"));
+    		doc.append("month", (Integer) date.get("month"));
+    		doc.append("day", (Integer) date.get("day"));
+    		doc.append("wktData", d.get("wktData"));
+    		
+    		listDoc.add(doc);
+    	}
+    	//*表示任意值
+    	for (Integer year : yearSet){
+    		for (Integer month : monthSet){
+    			for (Integer day : daySet){
+    				//数据立方体的单元cell，如：(1999 年, 北京, 火灾事件)※(事发数量)
+    				Document cell = new Document();
+    				List<Document> resultList = new ArrayList<>();
+    				for (Document doc : listDoc){
+    					Document result = new Document();    					
+    					if (year == null){
+    						result.append("year", "*");
+    					}else {
+    						int y = (int) doc.get("year");
+    						if (y != year){
+    							continue;
+    						}else {
+    							result.append("year", y);
+    						}
+    					}
+    					
+    					if (month == null){
+    						result.append("month", "*");
+    					}else {
+    						int m = (int) doc.get("month");
+    						if (m != month){
+    							continue;
+    						}else{
+    							result.append("month", m);
+    						}
+    					}
+    					
+    					if (day == null){
+    						result.append("day", "*");
+    					}else {
+    						int d = (int) doc.get("day");
+    						if (d != day){
+    							continue;
+    						}else{
+    							result.append("day", d);
+    						}
+    					}
+    					
+    					result.append("wktData", doc.get("wktData"));
+    					resultList.add(result);
+    				}
+    				if (resultList.size() > 0){
+    					Document dateDimension = new Document();
+    					dateDimension.append("year", resultList.get(0).get("year"));
+    					dateDimension.append("month", resultList.get(0).get("month"));
+    					dateDimension.append("day", resultList.get(0).get("day"));
+    					cell.append("dateDimention", dateDimension);
+    					cell.append("crimeCount", resultList.size());
+    					List<String> wktDataList = new ArrayList<>();
+        				for (Document res : resultList){
+        					wktDataList.add((String) res.get("wktData"));
+        				}
+        				cell.append("wktDataList", wktDataList);
+        				preComputeCol.insertOne(cell);
+    				}
+    				
+    			}
+    		}
+    	}
+    	
+    	
+    	//System.out.println(listDoc.size());
+    	
+    }
+    
+    public static void main(String[] args) {
+    	
+    	VectorPreCompute pre = new VectorPreCompute();
+    	//物化
+//    	long start = System.currentTimeMillis();
+//    	pre.preCompute();
+//    	long end = System.currentTimeMillis();
+//    	System.out.println(end-start);
+    	
+    	MongoFeatureDaoImp mongoDao = new MongoFeatureDaoImp();
+    	//原始数据上进行聚合查询
+    	MongoCollection<Document> col = mongoDao.getCollection("sowhat", "AmericanCrimeData");
+    	//MongoCollection<Document> col = mongoDao.getCollection("crime", "AmericanCrimeData_date");
+    	List<Document> ls = new ArrayList<>();
+    	ls.add(new Document("$match", new Document("beginDate.month", 1)));
+    	ls.add(new Document("$group", new Document("_id", "$beginDate.month")
+    									.append("crimeCount", new Document("$sum", 1))
+    									.append("wktDataList", new Document("$push", "$wktData"))
+    									));
+    	long start1 = System.currentTimeMillis();
+    	AggregateIterable<Document> iterable = col.aggregate(ls);
+    	long end1 = System.currentTimeMillis();
+    	ArrayList<Document> valueResult1 = new ArrayList<Document>();
+    	for (Document row : iterable){
+    		valueResult1.add(row);
+    	}
+    	//物化后的数据上进行查询
+    	MongoCollection<Document> preComputeCol = mongoDao.getCollection("crimePreCompute", "preComputeData2014");   	
+    	Document filter = new Document();
+    	filter.append("dateDimention.year", "*");
+    	filter.append("dateDimention.month", 1);
+    	filter.append("dateDimention.day", "*");
+    	long start2 = System.currentTimeMillis();
+    	FindIterable<Document> it = preComputeCol.find(filter);
+    	long end2 = System.currentTimeMillis();
+    	ArrayList<Document> valueResult2 = new ArrayList<Document>();
+    	for (Document row : it){
+    		valueResult2.add(row);
+    	}
+    	System.out.println(end1-start1);
+    	System.out.println(end2-start2);
+    	
+	}
+
+}

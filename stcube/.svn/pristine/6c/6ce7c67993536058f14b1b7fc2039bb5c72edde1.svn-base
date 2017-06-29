@@ -1,0 +1,35 @@
+package com.lab.stcube.service;
+
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.operation.TransformException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.lab.stcube.model.SpatioTemporalFeatureSet;
+import com.lab.stcube.transform.IDataTransform;
+
+@Service
+public class TestService {
+	
+	@Autowired
+	private IDataTransform dataTransform;
+	
+	public SpatioTemporalFeatureSet getBasedata(){
+		SpatioTemporalFeatureSet st_objects = dataTransform.transferDataToSTFeatureSet();
+		try {
+			st_objects.changeCRS("EPSG:3857");
+		} catch (MismatchedDimensionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return st_objects;
+	}
+
+}

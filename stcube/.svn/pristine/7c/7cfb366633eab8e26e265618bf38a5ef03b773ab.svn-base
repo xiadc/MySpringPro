@@ -1,0 +1,161 @@
+/**
+ * @author :dell
+ * @date 2017年4月19日 上午9:53:38
+ * @CopyRight:中国地质大学(武汉) 信息工程学院
+ * Description:
+ */
+package com.lab.stcube.controller;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.springframework.http.HttpRequest;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.HttpServletBean;
+
+import com.lab.stcube.model.GeomTypeEnum;
+import com.lab.stcube.model.SpatioTemporalFeature;
+import com.lab.stcube.model.SpatioTemporalFeatureSet;
+import com.lab.stcube.visualization.imp.VisualizationImp;
+
+/**
+ * @author dell
+ * 
+ *
+ */
+@Controller  
+public class testController {  
+    @RequestMapping("/data/basedata")  
+    public @ResponseBody List<Map<String,Object>> basedata() throws Exception{  
+    	
+    	//时空对象集合
+  	    SpatioTemporalFeatureSet st_objects= new SpatioTemporalFeatureSet();
+  	    st_objects.setFeatureType("CATEGORY:String,CALL GROUPS:String,final_case_type:String,"
+    			+ "CASE DESC:String,census_tract:Integer",GeomTypeEnum.Point,"EPSG:2992");
+  	    SimpleFeatureType objsType=st_objects.getFeatureType();
+		//读取文件
+        try {
+        
+        StringBuffer sb= new StringBuffer("");
+       
+        //读取
+        FileReader reader = new FileReader("C:\\Users\\dell\\Desktop\\NIJ2016_JAN01_JUL31.csv");
+        BufferedReader br = new BufferedReader(reader);
+           
+        String str = null;
+        br.readLine(); //去除文件头
+      //  int i=1000;
+        while((str = br.readLine()) != null) {
+        //	if(--i<0)break;
+        	String[] strs = str.split(",");
+        	
+        	String wktStr ="POINT ("+strs[5]+" "+strs[6]+")";
+        	
+        	System.out.println(st_objects.getStSetLength()+1+"---"+strs[4]+" "+str);
+        	
+      	    SpatioTemporalFeature stFtest=new SpatioTemporalFeature();
+      	    stFtest.setFeatureType(objsType);//m_typeBuilder.buildFeatureType()
+      	    stFtest.setAttribute("CATEGORY", strs[0].trim());
+      	    stFtest.setAttribute("CALL GROUPS", strs[1].trim());
+      	    stFtest.setAttribute("final_case_type", strs[2].trim());
+      	    stFtest.setAttribute("CASE DESC", strs[3].trim());
+      	    stFtest.setAttribute("census_tract", strs.length<8?0:Integer.parseInt(strs[7]));
+      	    
+      	    stFtest.setTimePeriod(strs[4],"yyyy/mm/dd");
+
+      	    stFtest.setGeometry(wktStr);
+  
+      	    st_objects.addStObject(stFtest);
+      	    
+        }
+       
+        br.close();
+        reader.close();               
+        }
+        catch(FileNotFoundException e) {
+        	e.printStackTrace();
+        }
+        catch(IOException e) {
+        	e.printStackTrace();
+       }
+       
+        //VisualizationImp.getTimeCount(st_objects); System.out.println("--timeCount--");
+       // VisualizationImp.getBaseData(st_objects); System.out.println("--BaseData--");
+    	st_objects.changeCRS("EPSG:3857");
+        
+        return VisualizationImp.getBaseData(st_objects);  
+    }  
+      
+   
+    @RequestMapping("/data/timecount")  
+    public @ResponseBody Map<String, Object> timecount() throws Exception{  
+    	
+    	//时空对象集合
+  	    SpatioTemporalFeatureSet st_objects= new SpatioTemporalFeatureSet();
+  	    st_objects.setFeatureType("CATEGORY:String,CALL GROUPS:String,final_case_type:String,"
+    			+ "CASE DESC:String,census_tract:Integer",GeomTypeEnum.Point,"EPSG:2992");
+  	    SimpleFeatureType objsType=st_objects.getFeatureType();
+		//读取文件
+        try {
+        
+        StringBuffer sb= new StringBuffer("");
+       
+        //读取
+        FileReader reader = new FileReader("C:\\Users\\dell\\Desktop\\NIJ2016_JAN01_JUL31.csv");
+        BufferedReader br = new BufferedReader(reader);
+           
+        String str = null;
+        br.readLine(); //去除文件头
+       // int i=1000;
+        while((str = br.readLine()) != null) {
+        	//if(--i<0)break;
+        	String[] strs = str.split(",");
+        	
+        	String wktStr ="POINT ("+strs[5]+" "+strs[6]+")";
+        	
+        	System.out.println(st_objects.getStSetLength()+1+"---"+strs[4]+" "+str);
+        	
+      	    SpatioTemporalFeature stFtest=new SpatioTemporalFeature();
+      	    stFtest.setFeatureType(objsType);//m_typeBuilder.buildFeatureType()
+      	    stFtest.setAttribute("CATEGORY", strs[0].trim());
+      	    stFtest.setAttribute("CALL GROUPS", strs[1].trim());
+      	    stFtest.setAttribute("final_case_type", strs[2].trim());
+      	    stFtest.setAttribute("CASE DESC", strs[3].trim());
+      	    stFtest.setAttribute("census_tract", strs.length<8?0:Integer.parseInt(strs[7]));
+      	    
+      	    stFtest.setTimePeriod(strs[4],"yyyy/MM/dd");
+
+      	    stFtest.setGeometry(wktStr);
+  
+      	    st_objects.addStObject(stFtest);
+      	    
+        }
+       
+        br.close();
+        reader.close();               
+        }
+        catch(FileNotFoundException e) {
+        	e.printStackTrace();
+        }
+        catch(IOException e) {
+        	e.printStackTrace();
+       }
+       
+        //VisualizationImp.getTimeCount(st_objects); System.out.println("--timeCount--");
+       // VisualizationImp.getBaseData(st_objects); System.out.println("--BaseData--");
+    	//st_objects.changeCRS("EPSG:3857");
+        
+        return VisualizationImp.getTimeCount(st_objects);  
+    }  
+    
+}
+
